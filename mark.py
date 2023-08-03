@@ -12,3 +12,4 @@ def my_sum2(name, *student_marks):
 
 my_sum2("ditto", 90,80,70)
 my_sum2("Marshall", 90, 88)
+my_sum2("MD",85,56,66)
