@@ -11,3 +11,4 @@ except ZeroDivisionError as e:
     print(e)
 
 print("Successfull run")
+print("New line")
