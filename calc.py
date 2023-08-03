@@ -12,3 +12,5 @@ def multiply(x, y):
 
 def divide(x, y):
 	return (x/y)
+add(10,50)
+subtract(34,67)
