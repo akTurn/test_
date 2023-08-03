@@ -9,3 +9,5 @@ except ValueError as e:
     print("Invalid Input Please Input Integer...")
 except ZeroDivisionError as e:
     print(e)
+
+print("Successfull run")
