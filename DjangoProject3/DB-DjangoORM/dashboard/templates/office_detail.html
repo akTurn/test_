@@ -1,0 +1,21 @@
+<!-- office_detail.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Office Detail</title>
+</head>
+<body>
+    <h1>Office Detail</h1>
+    <p><strong>Office Code:</strong> {{ object.officeCode }}</p>
+    <p><strong>City:</strong> {{ object.city }}</p>
+    <p><strong>Phone:</strong> {{ object.phone }}</p>
+    <p><strong>Address Line 1:</strong> {{ object.addressLine1 }}</p>
+    <p><strong>Address Line 2:</strong> {{ object.addressLine2 }}</p>
+    <p><strong>State:</strong> {{ object.state }}</p>
+    <p><strong>Country:</strong> {{ object.country }}</p>
+    <p><strong>Postal Code:</strong> {{ object.postalCode }}</p>
+    <p><strong>Territory:</strong> {{ object.territory }}</p>
+    <p><a href="{% url 'office-list' %}">Back to Office List</a></p>
+</body>
+</html>

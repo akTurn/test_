@@ -1,0 +1,16 @@
+<!-- employee_form.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create/Edit Employee</title>
+</head>
+<body>
+    <h1>Create/Edit Employee</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>

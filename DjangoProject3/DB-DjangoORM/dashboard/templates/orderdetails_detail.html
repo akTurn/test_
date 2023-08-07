@@ -1,0 +1,17 @@
+<!-- orderdetail_detail.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Detail</title>
+</head>
+<body>
+    <h1>Order Detail</h1>
+    <p><strong>Order Number:</strong> {{ object.orderNumber }}</p>
+    <p><strong>Product Code:</strong> {{ object.productCode }}</p>
+    <p><strong>Quantity Ordered:</strong> {{ object.quantityOrdered }}</p>
+    <p><strong>Price Each:</strong> {{ object.priceEach }}</p>
+    <p><strong>Order Line Number:</strong> {{ object.orderLineNumber }}</p>
+    <p><a href="{% url 'orderdetail-list' %}">Back to Order Detail List</a></p>
+</body>
+</html>

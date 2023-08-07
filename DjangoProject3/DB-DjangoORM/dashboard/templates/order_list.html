@@ -1,0 +1,42 @@
+<!-- order_list.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order List</title>
+</head>
+<body>
+    <h1>Order List</h1>
+    <a href="{% url 'order-create' %}">Create New Order</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Order Number</th>
+                <th>Order Date</th>
+                <th>Required Date</th>
+                <th>Shipped Date</th>
+                <th>Status</th>
+                <th>Customer Number</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in object_list %}
+            <tr>
+                <td>{{ order.orderNumber }}</td>
+                <td>{{ order.orderDate }}</td>
+                <td>{{ order.requiredDate }}</td>
+                <td>{{ order.shippedDate }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.customerNumber }}</td>
+                <td>
+                    <a href="{% url 'order-detail' order.pk %}">View</a>
+                    <a href="{% url 'order-update' order.pk %}">Edit</a>
+                    <a href="{% url 'order-delete' order.pk %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!-- office_list.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Office List</title>
+</head>
+<body>
+    <h1>Office List</h1>
+    <a href="{% url 'office-create' %}">Create New Office</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Office Code</th>
+                <th>City</th>
+                <th>Phone</th>
+                <th>Address Line 1</th>
+                <th>Address Line 2</th>
+                <th>State</th>
+                <th>Country</th>
+                <th>Postal Code</th>
+                <th>Territory</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for office in object_list %}
+            <tr>
+                <td>{{ office.officeCode }}</td>
+                <td>{{ office.city }}</td>
+                <td>{{ office.phone }}</td>
+                <td>{{ office.addressLine1 }}</td>
+                <td>{{ office.addressLine2 }}</td>
+                <td>{{ office.state }}</td>
+                <td>{{ office.country }}</td>
+                <td>{{ office.postalCode }}</td>
+                <td>{{ office.territory }}</td>
+                <td>
+                    <a href="{% url 'office-detail' office.pk %}">View</a>
+                    <a href="{% url 'office-update' office.pk %}">Edit</a>
+                    <a href="{% url 'office-delete' office.pk %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

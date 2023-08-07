@@ -1,0 +1,19 @@
+<!-- order_detail.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Detail</title>
+</head>
+<body>
+    <h1>Order Detail</h1>
+    <p><strong>Order Number:</strong> {{ object.orderNumber }}</p>
+    <p><strong>Order Date:</strong> {{ object.orderDate }}</p>
+    <p><strong>Required Date:</strong> {{ object.requiredDate }}</p>
+    <p><strong>Shipped Date:</strong> {{ object.shippedDate }}</p>
+    <p><strong>Status:</strong> {{ object.status }}</p>
+    <p><strong>Comments:</strong> {{ object.comments }}</p>
+    <p><strong>Customer Number:</strong> {{ object.customerNumber }}</p>
+    <p><a href="{% url 'order-list' %}">Back to Order List</a></p>
+</body>
+</html>

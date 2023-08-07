@@ -1,0 +1,20 @@
+<!-- employee_detail.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Detail</title>
+</head>
+<body>
+    <h1>Employee Detail</h1>
+    <p><strong>Employee Number:</strong> {{ object.employeeNumber }}</p>
+    <p><strong>Last Name:</strong> {{ object.lastName }}</p>
+    <p><strong>First Name:</strong> {{ object.firstName }}</p>
+    <p><strong>Extension:</strong> {{ object.extension }}</p>
+    <p><strong>Email:</strong> {{ object.email }}</p>
+    <p><strong>Office Code:</strong> {{ object.officeCode }}</p>
+    <p><strong>Reports To:</strong> {{ object.reportsTo }}</p>
+    <p><strong>Job Title:</strong> {{ object.jobTitle }}</p>
+    <p><a href="{% url 'employee-list' %}">Back to Employee List</a></p>
+</body>
+</html>
