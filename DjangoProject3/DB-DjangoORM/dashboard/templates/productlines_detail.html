@@ -1,0 +1,17 @@
+<!-- productline_detail.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Line Detail</title>
+</head>
+<body>
+    <h1>Product Line Detail</h1>
+    <p><strong>Product Line:</strong> {{ object.productLine }}</p>
+    <p><strong>Text Description:</strong> {{ object.textDescription }}</p>
+    <p><strong>HTML Description:</strong> {{ object.htmlDescription }}</p>
+    <!-- If you have an image field, you can display it as well -->
+    <!-- <img src="{{ object.image.url }}" alt="Product Line Image"> -->
+    <p><a href="{% url 'productline-list' %}">Back to Product Line List</a></p>
+</body>
+</html>

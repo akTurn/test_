@@ -1,0 +1,46 @@
+<!-- employee_list.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee List</title>
+</head>
+<body>
+    <h1>Employee List</h1>
+    <a href="{% url 'employee-create' %}">Create New Employee</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Employee Number</th>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Extension</th>
+                <th>Email</th>
+                <th>Office Code</th>
+                <th>Reports To</th>
+                <th>Job Title</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in object_list %}
+            <tr>
+                <td>{{ employee.employeeNumber }}</td>
+                <td>{{ employee.lastName }}</td>
+                <td>{{ employee.firstName }}</td>
+                <td>{{ employee.extension }}</td>
+                <td>{{ employee.email }}</td>
+                <td>{{ employee.officeCode }}</td>
+                <td>{{ employee.reportsTo }}</td>
+                <td>{{ employee.jobTitle }}</td>
+                <td>
+                    <a href="{% url 'employee-detail' employee.pk %}">View</a>
+                    <a href="{% url 'employee-update' employee.pk %}">Edit</a>
+                    <a href="{% url 'employee-delete' employee.pk %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

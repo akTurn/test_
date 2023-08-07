@@ -1,0 +1,36 @@
+<!-- productline_list.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Line List</title>
+</head>
+<body>
+    <h1>Product Line List</h1>
+    <a href="{% url 'productline-create' %}">Create New Product Line</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Line</th>
+                <th>Text Description</th>
+                <th>HTML Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for productline in object_list %}
+            <tr>
+                <td>{{ productline.productLine }}</td>
+                <td>{{ productline.textDescription }}</td>
+                <td>{{ productline.htmlDescription }}</td>
+                <td>
+                    <a href="{% url 'productline-detail' productline.pk %}">View</a>
+                    <a href="{% url 'productline-update' productline.pk %}">Edit</a>
+                    <a href="{% url 'productline-delete' productline.pk %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

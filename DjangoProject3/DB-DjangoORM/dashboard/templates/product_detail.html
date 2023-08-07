@@ -1,0 +1,21 @@
+<!-- product_detail.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Detail</title>
+</head>
+<body>
+    <h1>Product Detail</h1>
+    <p><strong>Product Code:</strong> {{ object.productCode }}</p>
+    <p><strong>Product Name:</strong> {{ object.productName }}</p>
+    <p><strong>Product Line:</strong> {{ object.productLine }}</p>
+    <p><strong>Product Scale:</strong> {{ object.productScale }}</p>
+    <p><strong>Product Vendor:</strong> {{ object.productVendor }}</p>
+    <p><strong>Product Description:</strong> {{ object.productDescription }}</p>
+    <p><strong>Quantity In Stock:</strong> {{ object.quantityInStock }}</p>
+    <p><strong>Buy Price:</strong> {{ object.buyPrice }}</p>
+    <p><strong>MSRP:</strong> {{ object.MSRP }}</p>
+    <p><a href="{% url 'product-list' %}">Back to Product List</a></p>
+</body>
+</html>

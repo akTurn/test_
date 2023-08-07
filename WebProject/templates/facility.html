@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Index Page</title>
+</head>
+<body>
+    <h1>Welcome to the Index Page</h1>
+
+    <ul>
+        {% for record in records %}
+        <li>{{ record }}</li>
+        {% endfor %}
+    </ul>
+
+    <form action="/add_record" method="POST">
+        <label for="fac_id">Facility ID:</label>
+        <input type="text" id="fac_id" name="fac_id" required><br>
+
+        <label for="fac_name">Facility Name:</label>
+        <input type="text" id="fac_name" name="fac_name" required><br>
+
+        <button type="submit">Add Record</button>
+    </form>
+</body>
+</html>

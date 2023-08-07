@@ -1,0 +1,40 @@
+<!-- orderdetail_list.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Detail List</title>
+</head>
+<body>
+    <h1>Order Detail List</h1>
+    <a href="{% url 'orderdetail-create' %}">Create New Order Detail</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Order Number</th>
+                <th>Product Code</th>
+                <th>Quantity Ordered</th>
+                <th>Price Each</th>
+                <th>Order Line Number</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for orderdetail in object_list %}
+            <tr>
+                <td>{{ orderdetail.orderNumber }}</td>
+                <td>{{ orderdetail.productCode }}</td>
+                <td>{{ orderdetail.quantityOrdered }}</td>
+                <td>{{ orderdetail.priceEach }}</td>
+                <td>{{ orderdetail.orderLineNumber }}</td>
+                <td>
+                    <a href="{% url 'orderdetail-detail' orderdetail.pk %}">View</a>
+                    <a href="{% url 'orderdetail-update' orderdetail.pk %}">Edit</a>
+                    <a href="{% url 'orderdetail-delete' orderdetail.pk %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

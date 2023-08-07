@@ -1,0 +1,16 @@
+<!-- order_form.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create/Edit Order</title>
+</head>
+<body>
+    <h1>Create/Edit Order</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>

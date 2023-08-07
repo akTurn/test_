@@ -1,0 +1,20 @@
+<!-- templates/home.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OVERALL INFO</title>
+</head>
+<body>
+    <h1>Welcome to the Home Page</h1>
+    <ul>
+        <li><a href="{% url 'customer-list' %}">Customers</a></li>
+        <li><a href="{% url 'product-list' %}">Products</a></li>
+        <li><a href="{% url 'order-list' %}">Orders</a></li>
+        <li><a href="{% url 'office-list' %}">Offices</a></li>
+        <li><a href="{% url 'employee-list' %}">Employee Details</a></li>
+        <li><a href="{% url 'productline-list' %}">Product Lines</a></li>
+        <li><a href="{% url 'orderdetail-list' %}">Order Details</a></li>
+    </ul>
+</body>
+</html>

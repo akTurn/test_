@@ -1,0 +1,25 @@
+<!-- customer_detail.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Detail</title>
+</head>
+<body>
+    <h1>Customer Detail</h1>
+    <p><strong>Customer Number:</strong> {{ object.customerNumber }}</p>
+    <p><strong>Customer Name:</strong> {{ object.customerName }}</p>
+    <p><strong>Contact Last Name:</strong> {{ object.contactLastName }}</p>
+    <p><strong>Contact First Name:</strong> {{ object.contactFirstName }}</p>
+    <p><strong>Phone:</strong> {{ object.phone }}</p>
+    <p><strong>Address Line 1:</strong> {{ object.addressLine1 }}</p>
+    <p><strong>Address Line 2:</strong> {{ object.addressLine2 }}</p>
+    <p><strong>City:</strong> {{ object.city }}</p>
+    <p><strong>State:</strong> {{ object.state }}</p>
+    <p><strong>Postal Code:</strong> {{ object.postalCode }}</p>
+    <p><strong>Country:</strong> {{ object.country }}</p>
+    <p><strong>Sales Rep Employee Number:</strong> {{ object.salesRepEmployeeNumber }}</p>
+    <p><strong>Credit Limit:</strong> {{ object.creditLimit }}</p>
+    <p><a href="{% url 'customer-list' %}">Back to Customer List</a></p>
+</body>
+</html>
