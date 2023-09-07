@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Piece Valid Moves</title>
+    <script>
+        function showPositionInput() {
+            const selectedPiece = document.getElementById('piece_name').value;
+            const positionInputs = ['bishop_position', 'rook_position', 'knight_position'];
+
+            for (const input of positionInputs) {
+                document.getElementById(input).style.display = 'none';
+            }
+
+            if (selectedPiece !== 'Queen') {
+                document.getElementById(`${selectedPiece.toLowerCase()}_position`).style.display = 'block';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Chess Piece Valid Moves Calculator</h1>
+    <form method="POST" oninput="showPositionInput()">
+        <label for="piece_name">Select a piece:</label>
+        <select name="piece_name" id="piece_name">
+            <option value="Queen">Queen</option>
+            <option value="Bishop">Bishop</option>
+            <option value="Rook">Rook</option>
+            <option value="Knight">Knight</option>
+        </select>
+        <br>
+        <div id="queen_position_input">
+            <label for="queen_position">Enter the position of the Queen (e.g., A1):</label>
+            <input type="text" name="queen_position" id="queen_position" required>
+            <br>
+        </div>
+        <div id="bishop_position_input" style="display: none;">
+            <label for="bishop_position">Enter the position of the Bishop (e.g., B2):</label>
+            <input type="text" name="bishop_position" id="bishop_position">
+            <br>
+        </div>
+        <div id="rook_position_input" style="display: none;">
+            <label for="rook_position">Enter the position of the Rook (e.g., C3):</label>
+            <input type="text" name="rook_position" id="rook_position">
+            <br>
+        </div>
+        <div id="knight_position_input" style="display: none;">
+            <label for="knight_position">Enter the position of the Knight (e.g., D4):</label>
+            <input type="text" name="knight_position" id="knight_position">
+            <br>
+        </div>
+        <input type="submit" value="Calculate Valid Moves">
+    </form>
+    <h2>Valid Moves:</h2>
+    <ul>
+        {% for move in valid_moves %}
+            <li>{{ move }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

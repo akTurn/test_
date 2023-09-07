@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,11 +38,37 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sales',
-    'authentication'
+    'authentication',
+    'rest_framework'
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'corsheaders'
 
 ]
+CORS_ALLOWED_ORIGINS = [
+   "http://localhost:8000",
+]
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+       'rest_framework.permissions.IsAuthenticated',
+   ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',  # Optional
+        'rest_framework.authentication.TokenAuthentication',    # Optional
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Add this line
+    ),
+}
+
+# JWT settings
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),  # Set your desired token lifetime
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=2),
+    'SLIDING_TOKEN_REFRESH_LIFETIME_LATE': timedelta(days=30),
+}
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware'
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -78,13 +104,17 @@ WSGI_APPLICATION = 'aksite.wsgi.application'
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'classicmodels',
+		'NAME': 'org',
 		'USER': 'root',
 		'PASSWORD': 'Prajith@1984',
 		'HOST':'localhost',
 		'PORT':'3306',
 	}
 }
+"""DATABASE_ROUTERS 1= ['aksite.sales.routers.AKSiteRouter']
+DATABASE_ROUTERS = [
+    'aksite/sales/routers.AKSiteRouter',
+]"""
 
 """
 DATABASES = {
@@ -137,3 +167,4 @@ STATIC_ROOT = (BASE_DIR / 'static')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL =  'authentication.User'

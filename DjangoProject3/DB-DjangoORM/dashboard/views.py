@@ -158,7 +158,7 @@ class ProductDeleteView(DeleteView):
 ##########################################################################################3
 class OfficeListView(ListView):
     model = Office
-    template_name = 'office_list.html'
+    template_name = 'office_list2.html'
 
 class OfficeDetailView(DetailView):
     model = Office
@@ -194,7 +194,7 @@ class OfficeDeleteView(DeleteView):
 
 def office_list(request):
     offices = Office.objects.all()
-    return render(request, 'office_list.html', {'offices': offices})
+    return render(request, 'office_list2.html', {'offices': offices})
 #########################################################################################
 class ProductLineListView(ListView):
     model = ProductLine

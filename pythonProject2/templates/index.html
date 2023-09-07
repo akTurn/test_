@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chess Moves Calculator</title>
+</head>
+<body>
+    <h1>Chess Moves Calculator</h1>
+
+
+    <form method="post">
+        <label for="queen_position">Queen Position:</label>
+        <input type="text" id="queen_position" name="piece_position[Queen]" required>
+        <label for="bishop_position">Bishop Position:</label>
+        <input type="text" id="bishop_position" name="piece_position[Bishop]" required>
+        <label for="rook_position">Rook Position:</label>
+        <input type="text" id="rook_position" name="piece_position[Rook]" required>
+        <label for="knight_position">Knight Position:</label>
+        <input type="text" id="knight_position" name="piece_position[Knight]" required>
+        <button type="submit">Calculate</button>
+    </form>
+    {% if valid_moves %}
+        <h2>Valid Moves:</h2>
+        <ul>
+            {% for piece, moves in valid_moves.items() %}
+                <li><strong>{{ piece }}:</strong> {{ moves|join(', ') }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

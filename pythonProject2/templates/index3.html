@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Piece Valid Moves</title>
+</head>
+<body>
+    <h1>Chess Piece Valid Moves Calculator</h1>
+    <form method="POST">
+        <label for="piece_name">Select a piece:</label>
+        <select name="piece_name" id="piece_name">
+            <option value="Queen">Queen</option>
+            <option value="Bishop">Bishop</option>
+            <option value="Rook">Rook</option>
+            <option value="Knight">Knight</option>
+        </select>
+        <br>
+        {% for piece in ['Bishop', 'Rook', 'Knight'] %}
+            <label for="{{ piece|lower }}_position">Enter the position of the {{ piece }} (e.g., B2):</label>
+            <input type="text" name="{{ piece|lower }}_position" id="{{ piece|lower }}_position">
+            <br>
+        {% endfor %}
+        <label for="piece_position">Enter the position of the selected piece (e.g., A1):</label>
+        <input type="text" name="piece_position" id="piece_position" required>
+        <br>
+        <input type="submit" value="Calculate Valid Moves">
+    </form>
+    <h2>Valid Moves:</h2>
+    <ul>
+        {% for move in valid_moves %}
+            <li>{{ move }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
