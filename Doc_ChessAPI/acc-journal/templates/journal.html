@@ -6,12 +6,53 @@
     <title>Account Journal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+<!--
 <body>
     <div class="container">
         <h1>Welcome, {{ user.username }}!</h1>
         <a href="{{ url_for('logout') }}">Logout</a>
         <h2>Journal</h2>
-        <!-- Your journal content here -->
+
+    </div>
+</body>-->
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>DET SYSTEM</h2>
+        <ul>
+            <li><a href="/expense">Expense</a></li>
+            <li><a href="/income">Income</a></li>
+            <li><a href="/reports">Reports</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+        </ul>
+    </div>
+
+    <!--
+    <div class="topnav">
+         <h1>Welcome, {{ user.username }}!</h1>
+        <a href="/profile">Profile</a>
+        <a href="/logout">Logout</a>
+    </div>-->
+
+    <!-- Top Navigation Bar -->
+<div class="topnav">
+    <div class="dropdown">
+        <button class="dropbtn">Welcome, {{ current_user.username }} &#9660;</button>
+        <div class="dropdown-content">
+            <a href="/profile">Profile</a>
+            <a href="/settings">Settings</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Content Area -->
+    <div class="content">
+        <h1>Last Week's Transactions</h1>
+        <!-- Display last week's transaction details here -->
+                {% block content %}
+        {% endblock %}
     </div>
 </body>
 </html>

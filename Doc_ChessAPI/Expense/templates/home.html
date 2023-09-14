@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Entry</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+<h1>Expense Entry</h1>
+<form method="POST" action="/expense">
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required><br>
+
+    <label for="spendTo">SpendTo:</label>
+    <input type="radio" id="spendTo" name="spendTo" value="Card"> MD
+    <input type="radio"  name="spendTo" value="Cash"> Fam
+    <br>
+
+    <label for="expense_category">Expense Category:</label>
+    <select id="expense_category" name="expense_category" required>
+          <option value="">Select a category</option>
+  {% for category in expense_categories %}
+    <option value="{{ category.id }}">{{ category.name }}</option>
+  {% endfor %}
+
+    </select><br>
+
+    <label for="expense_subcategory">Expense Subcategory:</label>
+    <select id="expense_subcategory" name="expense_subcategory" required>
+
+  {% for subcategory in expense_subcategories %}
+    <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
+  {% endfor %}
+    </select>
+    <br>
+
+    <label for="payment_type">Payment Type:</label>
+    <input type="radio" id="payment_Type" name="payment_type" value="cash">Cash
+    <input type="radio"  name="payment_type" value="card">Card
+    <br>
+
+    <label for="card_type">Card Type:</label>
+    <select id="card_type" name="card_type">
+
+  {% for card_detail in card_details %}
+    <option value="{{ card_detail.id }}">{{ card_detail.card_name }} - {{card_detail.card_type}}</option>
+  {% endfor %}
+    </select><br>
+
+    <label for="amount_paid">Amount Paid:</label>
+    <input type="number" id="amount_paid" name="amount_paid" step="0.01" required><br>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" rows="4" cols="50"></textarea><br>
+
+    <input type="submit" value="Submit">
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // JavaScript code for dynamically loading subcategories
+    $(document).ready(function() {
+        $("#expense_category").change(function() {
+            var categoryId = $(this).val();
+            console.log (categoryId)
+            $.ajax({
+                type: "GET",
+                url: "/get_subcategories?category_id=" + categoryId,
+                success: function(data) {
+                    var subcategoryDropdown = $("#expense_subcategory");
+                    subcategoryDropdown.empty();
+                    subcategoryDropdown.append('<option value="">Select a subcategory</option>');
+                    $.each(JSON.parse(data), function(key, value) {
+                        subcategoryDropdown.append('<option value="' + value.id + '">' + value.name + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

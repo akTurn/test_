@@ -1,7 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, flash,jsonify,json
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, json
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
-from flask_session import Session
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import secrets
 import string
@@ -16,32 +14,17 @@ def generate_secret_key(length=24):
 
 
 app = Flask(__name__)
-
-# To run Testing
-if app.config['TESTING']:
-    app.config.from_pyfile('test_config.py')  # Load the test config
-
-# Initialize the session
-
 app.config['SECRET_KEY'] = generate_secret_key()
-app.config['SESSION_TYPE'] = 'filesystem'  # Use a persistent session type
-app.config['SESSION_PERMANENT'] = True  # Session doesn't expire on browser close
-app.config['SESSION_USE_SIGNER'] = True  # Sign the session data
-app.config['SESSION_KEY_PREFIX'] = 'your_session_prefix_'  # Change to a unique prefix
-app.config['SESSION_COOKIE_SECURE'] = True  # Enable secure session cookies in production
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:test123@localhost:3306/python_db'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:test123@localhost:3306/pythondb'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://username:password@localhost/database_name'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///account_journal.db'
-Session(app)
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 
-class User(UserMixin,db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -53,6 +36,7 @@ class User(UserMixin,db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
 
 class Expense(db.Model):
     __tablename__ = 'expenses'
@@ -73,11 +57,13 @@ class ExpenseCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
 
+
 class ExpenseSubcategory(db.Model):
     __tablename__ = 'expense_subcategories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('expense_categories.id'), nullable=False)
+
 
 class CardDetails(db.Model):
     __tablename__ = 'card_details'
@@ -85,62 +71,88 @@ class CardDetails(db.Model):
     card_type = db.Column(db.String(50), nullable=False)
     card_name = db.Column(db.String(255), nullable=False)
 
-@app.route('/expense', methods=['GET','POST'])
+
+@app.route('/expense', methods=['GET', 'POST'])
 def expense():
+    expense_categories = db.session.query(ExpenseCategory).all()
+    card_details = db.session.query(CardDetails).all()
+    history_data = db.session.query(Expense).order_by(Expense.id.desc()).limit(5).all()
     if request.method == 'POST':
         expense_data = request.form
         c_user = db.session.query(User).filter_by(username=current_user.username).all()
         modified_expense_data = expense_data.copy()  # Create a copy of the original data
         modified_expense_data['user_id'] = c_user[0].id
-        print("expense_data",modified_expense_data)
-        expense = Expense(**modified_expense_data)#pass data as parameters on Expense model
+        expense = Expense(**modified_expense_data)  # pass data as parameters on Expense model
         db.session.add(expense)
         db.session.commit()
+        history_data = Expense.query.order_by(Expense.id.desc()).limit(5).all()
+        return render_template('final_expense.html',form_title='Create Expense',
+                               card_details=card_details,
+                               history_data=history_data,
+                               expense_categories=expense_categories,
+                               user=current_user.username)
 
-    user = User.query.filter_by(username=current_user.username).first()
+    return render_template('final_expense.html', form_title='Create Expense',
+                           card_details=card_details,
+                           history_data=history_data,
+                           expense_categories=expense_categories,
+                           user=current_user.username)
 
-    if 'first-login'  not in session:
-        session['first_login'] = True
-
-        # User is not logging in for the first time, show the last 5 entries
-        last_5_expenses = Expense.query.order_by(Expense.id.desc()).limit(5).all()
-    else:
-        # User is logging in for the first time or doesn't exist, don't show last entries
-        last_5_expenses = []
-
-    return render_template('expense.html', last_5_expenses=last_5_expenses)
-      #  return jsonify(expense.to_dict())
-
+@app.route('/expense/delete/<int:expense_id>',methods=['DELETE'])
+@login_required
+def delete_expense(expense_id):
+    print("delete")
     expense_categories = db.session.query(ExpenseCategory).all()
+    card_details = db.session.query(CardDetails).all()
+    history_data = db.session.query(Expense).order_by(Expense.id.desc()).limit(5).all()
+    expense = Expense.query.get_or_404(expense_id)
+    db.session.delete(expense)
+    db.session.commit()
+    return render_template('final_expense.html', form_title='Create Expense',
+                           card_details=card_details,
+                           history_data=history_data,
+                           expense_categories=expense_categories,
+                           user=current_user.username)
 
-    card_details =db.session.query(CardDetails).all()
+@app.route('/expense/update/<int:expense_id>', methods=['GET', 'POST'])
+@login_required
+def update_expense(expense_id):
+    # Retrieve the expense to be updated from the database
+    expense = Expense.query.get_or_404(expense_id)
+    category_u = ExpenseCategory.query.all()
+    card_u = CardDetails.query.all()
 
-    return render_template('final_expense.html',card_details=card_details,
-                           expense_categories=expense_categories,user=current_user.username)
+    if request.method == 'POST':
+        # Update expense data based on the form input
+        expense.date = request.form['date']
+        expense.spend_to = request.form['spend_to']
+        expense.expense_category_id = request.form['expense_category_id']
+        expense.expense_subcategory_id = request.form['expense_subcategory_id']
+        expense.payment_type = request.form['payment_type']
+        expense.card_id = request.form['card_id']
+        expense.amount_paid = request.form['amount_paid']
+        expense.description = request.form['description']
+
+        db.session.commit()
+        flash('Expense updated successfully', 'success')
+        return redirect(url_for('expense',
+                                form_title='Create Expense',
+                                user=current_user.username))
+
+    return render_template('final_expense.html', user=current_user.username,
+                           form_title='Update Expense', expense=expense,
+                           category_u=category_u,card_u=card_u)
 
 
-"""
 @app.route('/get_subcategories')
 def get_subcategories():
     category_id = request.args.get('category_id')
-    subcategories = ExpenseSubcategory.query.filter_by(category_id=category_id).all()
-    # Convert subcategories to a list of dictionaries or any desired format
-    subcategory_list = [{"id": sub.id, "name": sub.name} for sub in subcategories]
-    subcategory_json = json.dumps(subcategory_list)
-    print(subcategory_json)
-    return render_template('expense.html',expense_subcategory=subcategory_json,user=current_user.username)
-"""
-
-
-# Define the /get_subcategories route
-@app.route('/get_subcategories')
-def get_subcategories():
-    category_id = request.args.get('category_id')
+    print("category_id",category_id)
     subcategories = ExpenseSubcategory.query.filter_by(category_id=category_id).all()
 
     # Convert subcategories to a list of dictionaries
     subcategory_list = [{"id": sub.id, "name": sub.name} for sub in subcategories]
-    print(jsonify(subcategory_list),"$$$$$$$$$$$$")
+    print("subcategory_list", subcategory_list)
     # Return subcategories as JSON response
     return jsonify(subcategory_list)
 
@@ -149,10 +161,12 @@ def get_subcategories():
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 @app.route('/')
 @login_required
 def home():
     return render_template('journal.html', user=current_user)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -160,12 +174,12 @@ def login():
         username = request.form['username']
         password = request.form['password']
         user = User.query.filter_by(username=username).first()
-        print(user,"gggggg")
+
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
-            print("test1")
+
             flash('Logged in successfully!', 'success')
-            print("test2")
+
             return redirect(url_for('home'))
         else:
             print("wrong")
@@ -173,9 +187,8 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/register', methods=['GET','POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
@@ -197,6 +210,7 @@ def register():
     # For  GETrequests, display  the  registration form
     return render_template('register.html')
 
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -207,4 +221,4 @@ def logout():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')

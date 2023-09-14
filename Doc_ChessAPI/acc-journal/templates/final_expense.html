@@ -1,0 +1,221 @@
+<!-- expense.html -->
+{% extends 'journal.html' %}
+
+{% block content %}
+    <h1>Expense Entry</h1>
+    <form id="expenseForm" method="POST" action="">
+        <h2 id="formTitle">Create Expense</h2>
+
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required value="{{ expense.date if expense else '' }}"><br>
+
+        <label for="spend_to">SpendTo:</label>
+        <input type="radio" id="spend_to" name="spend_to" value="MD" {% if not expense or (expense and expense.spend_to == 'MD') %}checked{% endif %}> MD
+        <input type="radio" name="spend_to" value="Family" {% if expense and expense.spend_to == 'Family' %}checked{% endif %}> Family
+        <br>
+
+        <label for="expense_category_id">Expense Category:</label>
+        <select id="expense_category_id" name="expense_category_id" required>
+            {% if expense and expense.expense_category_id is defined %}
+                {% for category in category_u %}
+                    <option value="{{ category.id }}" {{ 'selected' if expense and category.id == expense.expense_category_id else '' }}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            {% else %}
+                {% for category in expense_categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            {% endif %}
+        </select><br>
+
+        <label for="expense_subcategory_id">SubCategory:</label>
+        <select id="expense_subcategory_id" name="expense_subcategory_id" disabled>
+            <option value="">Select a subcategory</option>
+        </select>
+        <br>
+
+        <label for="payment_type">Payment Type:</label>
+        <input type="radio" id="payment_type" name="payment_type" value="cash" {% if expense and expense.payment_type == 'Cash' %}checked{% endif %}> Cash
+        <input type="radio" name="payment_type" value="card" {% if not expense or (expense and expense.payment_type == 'Card') %}checked{% endif %}> Card
+        <br>
+
+        <label for="card_id">Card Type:</label>
+        <select id="card_id" name="card_id">
+            {% if expense and expense.card_id is defined %}
+                {% for card_detail in card_u %}
+                    <option value="{{ card_detail.id }}" {% if expense.card_id == card_detail.id %}selected{% endif %}>
+                        {{ card_detail.card_name }} - {{ card_detail.card_type }}
+                    </option>
+                {% endfor %}
+            {% else %}
+                {% for card_detail in card_details %}
+                    <option value="{{ card_detail.id }}">{{ card_detail.card_name }} - {{ card_detail.card_type }}</option>
+                {% endfor %}
+            {% endif %}
+        </select><br>
+
+        <label for="amount_paid">Amount Paid:</label>
+        <input type="number" id="amount_paid" name="amount_paid" step="0.01" required value="{{ expense.amount_paid if expense else '' }}"><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" cols="50">
+            {% if expense %}
+                {{ expense.description }}
+            {% endif %}
+        </textarea><br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <!-- JavaScript to switch between create and update modes -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var expenseForm = document.getElementById('expenseForm');
+            var formTitle = document.getElementById('formTitle');
+            var expenseId = document.getElementById('expenseId');
+
+            // Check if the form is in update mode based on the expenseId input
+            if (expenseId.value) {
+                console.log("update");
+                formTitle.textContent = 'Update Expense';
+                // Set the action URL for update mode
+                expenseForm.action = '/expense/update/' + expenseId.value;
+            } else {
+                console.log("create");
+                formTitle.textContent = 'Create Expense';
+                // Set the action URL for create mode
+                expenseForm.action = '/expense';
+            }
+
+        });
+    </script>
+
+ <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function getSubcategories(category_id) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/get_subcategories?category_id=' + category_id, true);
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        var subcategories = JSON.parse(xhr.responseText);
+                        console.log("RUN");
+                        var subcategoryDropdown = document.getElementById('expense_subcategory_id');
+
+                        // Clear existing options and enable the dropdown
+                        subcategoryDropdown.innerHTML = '';
+                        subcategoryDropdown.disabled = false;
+
+                        // Add a default "Select a subcategory" option
+                        subcategoryDropdown.appendChild(new Option('Select a subcategory', ''));
+
+                        // Populate the dropdown with subcategories
+                        for (var i = 0; i < subcategories.length; i++) {
+                            subcategoryDropdown.appendChild(new Option(subcategories[i].name, subcategories[i].id));
+                        }
+                    }
+                };
+                xhr.send();
+            }
+
+            document.getElementById('expense_category_id').onchange = function() {
+                var category_id = this.value;
+                if (category_id) {
+                    // Only fetch subcategories if a category is selected
+                    getSubcategories(category_id);
+                } else {
+                    // If no category is selected, disable and reset the subcategory dropdown
+                    var subcategoryDropdown = document.getElementById('expense_subcategory_id');
+                    subcategoryDropdown.innerHTML = '<option value="">Select a subcategory</option>';
+                    subcategoryDropdown.disabled = true;
+                }
+            };
+        });
+    </script>
+
+
+    <!-- Check if there are Recent expenses to display -->
+    {% if history_data %}
+    <div>
+        <h2>Recent Expense Entries</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Spend To</th>
+                    <th>Category</th>
+                    <th>Desc</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <!-- Add more table headers as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in history_data %}
+                <tr>
+                    <td>{{ expense.date }}</td>
+                    <td>{{ expense.spend_to }}</td>
+                    <td>{{ expense.expense_category_id }}</td>
+                    <td>{{ expense.description }}</td>
+                    <td>{{ expense.payment_type }}</td>
+                    <td>{{ expense.amount_paid }}</td>
+                    <td>
+                        <!-- Add update and delete buttons with links or form submissions -->
+                        <a href="/expense/update/{{ expense.id }}" class="btn btn-primary">Update</a>
+                        <!--<a href="/expense/delete/{{ expense.id }}" class="btn btn-danger"
+                            onclick="return confirm('Are you sure you want to delete this expense?')">Delete</a>-->
+                        <a href="#" class="btn btn-danger" onclick="deleteExpense({{ expense.id }})">Delete</a>
+
+                                            <script>
+                                            function deleteExpense(expenseId) {
+                                                if (confirm('Are you sure you want to delete this expense?')) {
+                                                    fetch(`/expense/delete/${expenseId}`, {
+                                                        method: 'DELETE',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'X-CSRFToken': getCSRFToken()  // Add CSRF token if required by your framework
+                                                        },
+                                                    })
+                                                    .then(response => {
+                                                        if (response.ok) {
+                                                            // Handle success (e.g., redirect or update the UI)
+                                                            window.location.reload(); // Example: Refresh the page
+                                                        } else {
+                                                            // Handle error (e.g., show an error message)
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error:', error);
+                                                    });
+                                                }
+                                            }
+
+                                            function getCSRFToken() {
+                                                const csrfCookie = document.cookie
+                                                    .split('; ')
+                                                    .find(row => row.startsWith('csrftoken='));
+
+                                                if (csrfCookie) {
+                                                    return csrfCookie.split('=')[1];
+                                                } else {
+                                                    return null;
+                                                }
+                                            }
+                                            </script>
+
+
+
+
+
+                    </td>
+
+
+
+                    <!-- Add more table columns as needed -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+{% endblock %}

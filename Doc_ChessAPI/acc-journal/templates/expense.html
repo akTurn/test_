@@ -1,0 +1,87 @@
+<!--  expense.html  -->
+{% extends 'journal.html' %}
+
+{% block content %}
+
+    <h1>Expense Entry</h1>
+    <form method="POST" action="/expense">
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required><br>
+
+        <label for="spendTo">SpendTo:</label>
+
+        <input type="radio"   id="spendTo"  name="spendTo" value="Card"> MD
+        <input type="radio"  name="SpendTo" value="Cash"> Fam
+        <br>
+
+       <br>  <label for="expense_category">Expense Category:</label>
+        <select id="expense_category" name="expense_category" required>
+  <option value="">Select a category</option>
+  {% for category in expense_categories %}
+    <option value="{{ category.id }}">{{ category.name }}</option>
+  {% endfor %}
+</select><br>
+      <label for="expense_subcategory">SubCategory:</label>
+<select id="expense_subcategory" name="expense_subcategory" disabled>
+  <option value="">Select a subcategory</option>
+  {% for subcategory in expense_subcategory %}
+    <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
+  {% endfor %}
+</select>
+
+<script>
+function getSubcategories(category_id) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/get_subcategories?category_id=' + category_id, true);
+  xhr.onload = function() {
+     if (xhr.status === 200) {
+
+      var  subcategories=document.getElementById('expense_subcategory').innerHTML;
+    }
+  };
+  xhr.send();
+}
+
+document.getElementById('expense_category').onchange = function() {
+  var category_id = this.value;
+  getSubcategories(category_id);
+};
+</script><br>
+
+        <label for="payment_type">Payment Type:</label>
+            <input type="radio" id="payment_type" name="payment_type" value="cash">Cash
+            <input type="radio" name="payment_type" value="card">Card
+        <br>
+
+        <label for="card_type">Card Type:</label>
+        <select id="card_type" name="card_type">
+         {% for card_detail in card_details %}
+                 <option value="{{ card_detail.id }}">{{ card_detail.name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <!--
+        var cardTypeInput = document.getElementById('card_type');
+var paymentTypeRadioButtons = document.getElementsByName('payment_type');
+
+for (var i = 0; i < paymentTypeRadioButtons.length; i++) {
+  paymentTypeRadioButtons[i].addEventListener('change', function() {
+    if (this.value === 'cash') {
+      cardTypeInput.style.display = 'none';
+    } else {
+      cardTypeInput.style.display = 'block';
+    }
+  });
+}
+-->
+
+        <label for="amount_paid">Amount Paid:</label>
+        <input type="number" id="amount_paid" name="amount_paid" step="0.01" required><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" cols="50"></textarea><br>
+
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
+

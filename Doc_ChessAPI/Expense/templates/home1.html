@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Entry</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+<h1>Expense Entry</h1>
+<form method="POST" action="/expense2">
+    <!-- ... other fields ... -->
+
+    <label for="expense_category">Expense Category:</label>
+    <select id="expense_category" name="expense_category" required>
+        <option value="">Select a category</option>
+        {% for category in expense_categories %}
+            <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+    </select><br>
+
+    <div id="subcategory_div">
+        <label for="expense_subcategory">Expense Subcategory:</label>
+        <select id="expense_subcategory" name="expense_subcategory" required>
+            <option value="">Select a subcategory</option>
+        </select>
+    </div>
+    <br>
+
+    <!-- ... other fields ... -->
+
+    <input type="submit" value="Submit">
+</form>
+
+<script>
+    // JavaScript code for dynamically showing/hiding subcategories
+    document.getElementById("expense_category").addEventListener("change", function() {
+        var categoryId = this.value;
+        var subcategoryDropdown = document.getElementById("expense_subcategory");
+        var subcategories = {{ subcategories_dict | tojson | safe }};
+
+        // Clear the subcategory dropdown
+        subcategoryDropdown.innerHTML = '<option value="">Select a subcategory</option>';
+
+        // Populate the subcategory dropdown with the selected category's subcategories
+        if (categoryId in subcategories) {
+            subcategories[categoryId].forEach(function(subcategory) {
+                var option = document.createElement("option");
+                option.value = subcategory.id;
+                option.text = subcategory.name;
+                subcategoryDropdown.appendChild(option);
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
