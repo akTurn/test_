@@ -1,0 +1,14 @@
+FROM python:latest
+
+LABEL Maintainer = "KANI_A"
+WORKDIR /acc-journal
+COPY . /acc-journal
+
+RUN pip install -r ./acc-journal/resources/requirements.txt
+
+
+EXPOSE 8000
+
+ENV FLASK_APP=./acc-journal/journalapp.py
+
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]

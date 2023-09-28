@@ -1,0 +1,19 @@
+version: '3'
+services:
+  python-app:
+    build:
+      context: ./resource
+      dockerfile: Dockerfile_python
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_APP=./acc-journal/journalapp.py
+
+
+  mysql-db:
+    build:
+      context: ./resource
+      dockerfile: Dockerfile_mysql
+    environment:
+       MYSQL_ROOT_PASSWORD: poi098
+       MYSQL_DATABASE: python_db

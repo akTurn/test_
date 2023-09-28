@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <!--
+https://www.geeksforgeeks.org/top-python-scripts-for-developers-to-implement/
 <body>
     <div class="container">
         <h1>Welcome, {{ user.username }}!</h1>
@@ -23,7 +24,7 @@
             <li><a href="/expense">Expense</a></li>
             <li><a href="/income">Income</a></li>
             <li><a href="/reports">Reports</a></li>
-            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
         </ul>
     </div>
 
@@ -37,7 +38,7 @@
     <!-- Top Navigation Bar -->
 <div class="topnav">
     <div class="dropdown">
-        <button class="dropbtn">Welcome, {{ current_user.username }} &#9660;</button>
+        <button class="dropbtn">Welcome, {{ user }} &#9660;</button>
         <div class="dropdown-content">
             <a href="/profile">Profile</a>
             <a href="/settings">Settings</a>
@@ -55,4 +56,29 @@
         {% endblock %}
     </div>
 </body>
+<script>
+
+ jwt_token = "{{ jwt_token }}";
+    console.log("JWT Token:", jwt_token);
+
+
+fetch("/dashboard", {
+    method: "GET",
+    headers: {
+        "Authorization": jwt_token
+    }
+})
+.then(response => {
+    if (response.status === 200) {
+        // Handle successful response
+    } else {
+        // Handle unauthorized access or other error
+    }
+})
+.catch(error => {
+    // Handle any network or request error
+});
+
+
+</script>
 </html>
