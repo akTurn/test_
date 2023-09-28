@@ -1,104 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, json
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-import secrets
-import string
+from flask_jwt_extended import current_user
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask import jsonify
-from sqlalchemy import func
-import plotly.express as px
 
-from datetime import datetime
-
-
-def generate_secret_key(length=24):
-    characters = string.ascii_letters + string.digits + string.punctuation
-    secret_key = ''.join(secrets.choice(characters) for _ in range(length))
-    return secret_key
-
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = generate_secret_key()
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:test123@localhost:3306/python_db'
-
-db = SQLAlchemy(app)
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-
-
-class User(UserMixin, db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(250), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-
-class Expense(db.Model):
-    __tablename__ = 'expenses'
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False)
-    spend_to = db.Column(db.Enum('MD', 'Family'), nullable=False, default='MD')
-    expense_category_id = db.Column(db.Integer, db.ForeignKey('expense_categories.id'), nullable=False)
-    expense_subcategory_id = db.Column(db.Integer, db.ForeignKey('expense_subcategories.id'), nullable=False)
-    payment_type = db.Column(db.Enum('Card', 'Cash'), nullable=False, default='Card')
-    card_id = db.Column(db.Integer, db.ForeignKey('card_details.id'))
-    amount_paid = db.Column(db.Float, nullable=False)
-    description = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-
-class ExpenseCategory(db.Model):
-    __tablename__ = 'expense_categories'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-
-
-class ExpenseSubcategory(db.Model):
-    __tablename__ = 'expense_subcategories'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('expense_categories.id'), nullable=False)
-
-
-class CardDetails(db.Model):
-    __tablename__ = 'card_details'
-    id = db.Column(db.Integer, primary_key=True)
-    card_type = db.Column(db.String(50), nullable=False)
-    card_name = db.Column(db.String(255), nullable=False)
-
-
-@app.route('/dashboard')
-def dashboard():
-    # Example: Query to calculate total expenses by category
-    category_expenses = db.session.query(
-        ExpenseCategory.name,
-        func.sum(Expense.amount_paid).label('total')
-    ).join(Expense).group_by(ExpenseCategory.name).all()
-
-    # Prepare data for Plotly chart
-    chart_data = [
-        {
-            'labels': [row.name for row in category_expenses],
-            'values': [row.total for row in category_expenses],
-            'type': 'pie',
-            'hoverinfo': 'label+percent+value',
-            'textinfo': 'percent',
-            'textposition': 'inside',
-            'hole': 0.4,  # Create a donut chart with a hole in the center
-        }
-    ]
-
-    return render_template('dashboard.html', chart_data=chart_data)
-
+from app import db,app
+from flask import Blueprint, request, jsonify, render_template
+from flask_sqlalchemy import SQLAlchemy
+from flask import request, redirect, url_for, flash
+from models import ExpenseCategory, CardDetails, Expense, User, ExpenseSubcategory
 
 
 @app.route('/expense', methods=['GET', 'POST'])
@@ -128,7 +35,7 @@ def expense():
                            user=current_user.username)
 
 @app.route('/expense/delete/<int:expense_id>',methods=['DELETE'])
-@login_required
+
 def delete_expense(expense_id):
     print("delete")
     expense_categories = db.session.query(ExpenseCategory).all()
@@ -144,7 +51,6 @@ def delete_expense(expense_id):
                            user=current_user.username)
 
 @app.route('/expense/update/<int:expense_id>', methods=['GET', 'POST'])
-@login_required
 def update_expense(expense_id):
     # Retrieve the expense to be updated from the database
     expense = Expense.query.get_or_404(expense_id)
@@ -186,13 +92,7 @@ def get_subcategories():
     return jsonify(subcategory_list)
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-
 @app.route('/')
-@login_required
 def home():
     return render_template('journal.html', user=current_user)
 
@@ -205,7 +105,7 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user and check_password_hash(user.password_hash, password):
-            login_user(user)
+           # login_user(user)
 
             flash('Logged in successfully!', 'success')
 
@@ -241,26 +141,7 @@ def register():
 
 
 @app.route('/logout')
-@login_required
+#@login_required
 def logout():
-    logout_user()
+    #logout_user()
     return redirect(url_for('login'))
-
-class Income(db.Model):
-    __tablename__ = 'income'
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False)
-    source = db.Column(db.String(255), nullable=False)
-    amount = db.Column(db.Float, nullable=False)
-    payment_method = db.Column(db.String(50))
-    card_id = db.Column(db.Integer, db.ForeignKey('card_details.id'))
-    tax_deductions = db.Column(db.Float)
-    tax_year = db.Column(db.Integer)
-    description = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True, host='0.0.0.0')

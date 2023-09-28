@@ -1,0 +1,13 @@
+# Use the official MySQL image from Docker Hub
+FROM mysql:latest
+
+# Set the root password for MySQL
+ENV MYSQL_ROOT_PASSWORD=poi098
+
+# Create a database during container initialization
+ENV MYSQL_DATABASE=python_db
+
+# Copy your SQL schema and data files to the image
+COPY schema.sql /docker-entrypoint-initdb.d/
+COPY data.sql /docker-entrypoint-initdb.d/
+

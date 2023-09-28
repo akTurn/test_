@@ -1,0 +1,70 @@
+{% extends 'journal.html' %}
+
+{% block content %}
+
+<body>
+    <h1>Dashboard</h1>
+
+    <h2>Total Expenses:</h2>
+      <!--  <p>Total Expenses: Rs{{ total_expenses|default(0)|round(2) }}</p>-->
+        <img src="{{ url_for('static', filename=total_expenses_image) }}" alt="Total Expenses">
+
+    <h2>Monthly Expenses:</h2>
+        <ul>
+            {% for entry in monthly_expenses %}
+                <li>Month {{ entry.expense_month }}: Rs.{{ entry.avg_monthly_expense|default(0)|round(2) }}</li>
+            {% endfor %}
+        </ul>
+        <div id="monthly_expenses_div">
+            {{ monthly_expenses_div|safe }}
+        </div>
+
+
+    <h2>Expense Ratio:</h2>
+    <p>Expense Ratio: {{ expense_ratio|default(0)|round(2) }}%</p>
+    {{ expense_ratio_html|safe }}
+
+
+    <h2>Savings Rate:</h2>
+    <p>Savings Rate: {{ savings_rate|default(0)|round(2) }}%</p>
+
+    <h2>Total Debt Payments:</h2>
+    <p>Total Debt Payments: Rs.{{ total_debt_payments|default(0)|round(2) }}</p>
+
+    <h2>Debt-to-Income Ratio:</h2>
+    <p>Debt-to-Income Ratio: {{ debt_to_income_ratio|default(0)|round(2) }}%</p>
+
+    <h2>Expense Categories:</h2>
+    <div id="chart" style="width: 400px; height: 400px;"></div>
+
+
+   <!-- Include Plotly JavaScript -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script>
+        var chart_data = {{ chart_data|tojson|safe }};
+
+        // Extract data from the chart_data object
+        var labels = chart_data[0].labels;
+        var values = chart_data[0].values;
+
+        // Create a pie chart
+        var data = [{
+            labels: labels,
+            values: values,
+            type: 'pie',
+            hoverinfo: 'label+percent+value',
+            textinfo: 'percent',
+            textposition: 'inside',
+            hole: 0.4
+        }];
+
+        var layout = {
+            title: 'Expense Categories',
+        };
+
+        Plotly.newPlot('chart', data, layout);
+    </script>
+</body>
+</html>
+{% endblock %}
